@@ -106,7 +106,13 @@ namespace VHDL_Extension
                     int startposition = line.Start.Position;
                     foreach (var word in values)
                     {
-                        if (keywords.Contains(word.Trim().ToLower()))
+                        if (word.Trim().StartsWith("--", StringComparison.Ordinal))
+                        {
+                            type = _classificationTypeRegistry.GetClassificationType("VHDL.comment");
+                            spans.Add(CreateClassificationSpan(line, startposition, line.End, type));
+                            break;
+                        }
+                        else if (keywords.Contains(word.Trim().ToLower()))
                         {
                             type = _classificationTypeRegistry.GetClassificationType("VHDL.reserved");
                             spans.Add(CreateClassificationSpan(line, startposition, startposition + word.Length, type));
