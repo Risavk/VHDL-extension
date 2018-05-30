@@ -49,6 +49,16 @@ namespace VHDL_Extension
         [BaseDefinition("VHDL")]
         internal static ClassificationTypeDefinition VhdlieeeDefinition;
 
+        [Export]
+        [Name("VHDL.number")]
+        [BaseDefinition("VHDL")]
+        internal static ClassificationTypeDefinition VhdlNumberDefinition;
+
+        [Export]
+        [Name("VHDL.string")]
+        [BaseDefinition("VHDL")]
+        internal static ClassificationTypeDefinition VhdlStringDefinition;
+
         #endregion
 
 #pragma warning restore 169
