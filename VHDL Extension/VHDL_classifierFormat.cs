@@ -40,5 +40,27 @@ namespace VHDL_Extension
         }
     }
 
+    [Export(typeof(EditorFormatDefinition))]
+    [ClassificationType(ClassificationTypeNames = "VHDL.number")]
+    [Name("VHDL.number")]
+    internal sealed class VHDLNumberFormat : ClassificationFormatDefinition
+    {
+        public VHDLNumberFormat()
+        {
+            ForegroundColor = Colors.Orange;
+        }
+    }
+
+    [Export(typeof(EditorFormatDefinition))]
+    [ClassificationType(ClassificationTypeNames = "VHDL.string")]
+    [Name("VHDL.string")]
+    internal sealed class VHDLStringFormat : ClassificationFormatDefinition
+    {
+        public VHDLStringFormat()
+        {
+            ForegroundColor = Colors.Purple;
+        }
+    }
+
     #endregion
 }

@@ -106,14 +106,63 @@ namespace VHDL_Extension
                     int startposition = line.Start.Position;
                     foreach (var word in values)
                     {
-                        if (keywords.Contains(word.Trim().ToLower()))
+                        if (word.Trim().Contains("--")) //Inline comment
+                        {
+                            int index = word.IndexOf("--", StringComparison.Ordinal);
+                            type = _classificationTypeRegistry.GetClassificationType("VHDL.comment");
+                            spans.Add(CreateClassificationSpan(line, startposition + index, line.End, type));
+                            break;
+                        }
+                        else if (keywords.Contains(word.Trim().ToLower())) //VHDL reserved word
                         {
                             type = _classificationTypeRegistry.GetClassificationType("VHDL.reserved");
                             spans.Add(CreateClassificationSpan(line, startposition, startposition + word.Length, type));
                         }
-                        else if (word.Trim().ToLower().StartsWith("ieee"))
+                        else if (word.Trim().ToLower().StartsWith("ieee")) //IEEE word thing
                         {
-                            spans.Add(CreateClassificationSpan(line, startposition, line.End.Position, _classificationTypeRegistry.GetClassificationType("VHDL.ieee")));
+                            int index = word.ToLower().IndexOf(".all", StringComparison.Ordinal);
+                            if (index == -1)
+                            {
+                                index = line.Extent.End;
+                            }
+                            else
+                            {
+                                //Find the .all on the end and turn that blue, for reasons (Quartus does it so yeah)
+                                int pos = startposition + index;
+                                spans.Add(CreateClassificationSpan(line, pos, pos + ".all".Length, _classificationTypeRegistry.GetClassificationType("VHDL.reserved")));
+                            }
+                            spans.Add(CreateClassificationSpan(line, startposition, startposition + index, _classificationTypeRegistry.GetClassificationType("VHDL.ieee")));
+                        }
+                        else //Look for number or strings and make those colors
+                        {
+                            for (int k = 0; k < word.Length; k++)
+                            {
+                                char c = word[k];
+                                if (c == '"')
+                                {
+                                    //String
+                                    int pos = startposition + k;
+                                    //Find closing quote
+                                    int endpos = startposition + word.IndexOf('"', k + 1);
+                                    if (endpos - startposition > 0)
+                                    {
+                                        spans.Add(CreateClassificationSpan(line, pos, endpos, _classificationTypeRegistry.GetClassificationType("VHDL.string")));
+                                    }
+                                    else
+                                    {
+                                        k = word.Length;
+                                    }
+                                }
+                                else
+                                {
+                                    if (char.IsNumber(c))
+                                    {
+                                        //Numbers
+                                        int pos = startposition + k;
+                                        spans.Add(CreateClassificationSpan(line, pos, pos + 1, _classificationTypeRegistry.GetClassificationType("VHDL.number")));
+                                    }
+                                }
+                            }
                         }
 
                         startposition += word.Length + 1; //Account for the whitespace
@@ -124,7 +173,7 @@ namespace VHDL_Extension
 
                 if (type != null)
                 {
-                    spans.Add(new ClassificationSpan(line.Extent, type));
+                    spans.Add(new ClassificationSpan(line.Extent, type)); //Only used when whole line is comment
                 }
             }
 
