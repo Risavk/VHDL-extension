@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VHDL_Extension.Types
+namespace VHDL_Extension
 {
-    public class Port
+    static class Helper
     {
-        public List<PortSignal> Signals { get; set; }= new List<PortSignal>();
+        
     }
 }

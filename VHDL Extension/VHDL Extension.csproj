@@ -50,15 +50,20 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Helper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestViewCreationListener.cs" />
+    <Compile Include="Types\Architecture.cs" />
     <Compile Include="Types\Entity.cs" />
     <Compile Include="Types\ieee_std_logic_1164.cs" />
     <Compile Include="Types\Port.cs" />
+    <Compile Include="Types\Process.cs" />
     <Compile Include="Types\Signals.cs" />
     <Compile Include="VHDL_classifier.cs" />
     <Compile Include="VHDL_classifierClassificationDefinition.cs" />
     <Compile Include="VHDL_classifierFormat.cs" />
     <Compile Include="VHDL_classifierProvider.cs" />
+    <Compile Include="VhdlStructerMapper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="keywords.csv">

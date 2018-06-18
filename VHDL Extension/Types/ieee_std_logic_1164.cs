@@ -28,6 +28,7 @@ namespace VHDL_Extension.Types
     public enum Types
     {
         std_logic,
-        std_logic_vector
+        std_logic_vector,
+        integer
     }
 }

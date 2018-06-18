@@ -19,6 +19,17 @@ namespace VHDL_Extension
     }
 
     [Export(typeof(EditorFormatDefinition))]
+    [ClassificationType(ClassificationTypeNames = "VHDL.customkeyword")]
+    [Name("VHDL.customkeyword")]
+    internal sealed class VHDLCustomKeyword : ClassificationFormatDefinition
+    {
+        public VHDLCustomKeyword()
+        {
+            ForegroundColor = Color.FromRgb(43, 145, 175);
+        }
+    }
+
+    [Export(typeof(EditorFormatDefinition))]
     [ClassificationType(ClassificationTypeNames = "VHDL.comment")]
     [Name("VHDL.comment")]
     internal sealed class VHDLCommentFormat : ClassificationFormatDefinition
