@@ -9,7 +9,9 @@ namespace VHDL_Extension.Types
     class Entity
     {
         public string Name { get; set; }
-        public Port Port { get; set; }
+        public Port Port { get; set; } = new Port();
+        public int StartLine { get; set; }
+        public int EndLine { get; set; }
         //TODO Add generic
     }
 }

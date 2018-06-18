@@ -40,6 +40,11 @@ namespace VHDL_Extension
         internal static ClassificationTypeDefinition VhdlReservedDefinition;
 
         [Export]
+        [Name("VHDL.customkeyword")]
+        [BaseDefinition("VHDL")]
+        internal static ClassificationTypeDefinition VhdlCustomKeywordDefinition;
+
+        [Export]
         [Name("VHDL.comment")]
         [BaseDefinition("VHDL")]
         internal static ClassificationTypeDefinition vhdlCommentDefinition;

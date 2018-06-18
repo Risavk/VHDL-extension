@@ -59,6 +59,7 @@
     <Compile Include="VHDL_classifierClassificationDefinition.cs" />
     <Compile Include="VHDL_classifierFormat.cs" />
     <Compile Include="VHDL_classifierProvider.cs" />
+    <Compile Include="VhdlStructerMapper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="keywords.csv">

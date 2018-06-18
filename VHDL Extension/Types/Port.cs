@@ -8,6 +8,6 @@ namespace VHDL_Extension.Types
 {
     public class Port
     {
-        public List<PortSignal> Signals { get; set; }
+        public List<PortSignal> Signals { get; set; }= new List<PortSignal>();
     }
 }
