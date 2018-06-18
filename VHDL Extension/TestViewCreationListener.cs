@@ -19,11 +19,8 @@ namespace VHDL_Extension
         [Import] internal IEditorFormatMapService FormatMapService = null;
 
         public void TextViewCreated(IWpfTextView textView)
-
         {
-
             new Listener(textView);
-
         }
 
     }

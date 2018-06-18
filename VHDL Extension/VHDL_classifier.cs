@@ -21,8 +21,6 @@ namespace VHDL_Extension
         /// </summary>
         private IClassificationTypeRegistryService _classificationTypeRegistry;
 
-        private List<string> keywords;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="VHDL_classifier"/> class.
         /// </summary>
@@ -31,35 +29,7 @@ namespace VHDL_Extension
         {
             this._classificationTypeRegistry = registry;
 
-            //Load all keywords
-            try
-            {
-                var path = Path.GetDirectoryName(typeof(VHDL_classifier).Assembly.Location);
-                if (path == null)
-                {
-                    MessageBox.Show("Couldn't load keywords");
-                    return;
-                }
-                path = Path.Combine(path, "keywords.csv");
-                using (var reader = new StreamReader(path))
-                {
-                    keywords = new List<string>();
-                    while (!reader.EndOfStream)
-                    {
-                        var line = reader.ReadLine();
-                        if (line != null)
-                        {
-                            var values = line.Split(';');
-
-                            keywords.Add(values[0]);
-                        }
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                MessageBox.Show("Error loading keywords");
-            }
+            Helper.LoadKeywoards();
         }
 
         #region IClassifier
@@ -134,7 +104,7 @@ namespace VHDL_Extension
                         }
 
                         var tempWord = word.Trim().TrimEnd(';');
-                        if (keywords.Contains(tempWord.ToLower())) //VHDL reserved word
+                        if (Helper.Keywords.Contains(tempWord.ToLower())) //VHDL reserved word
                         {
                             type = _classificationTypeRegistry.GetClassificationType("VHDL.reserved");
                             spans.Add(CreateClassificationSpan(line, startposition, startposition + word.TrimEnd().TrimEnd(';').Length, type));
