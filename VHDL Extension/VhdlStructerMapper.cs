@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using Microsoft.VisualStudio.Text;
 using VHDL_Extension.Types;
 
@@ -24,6 +25,7 @@ namespace VHDL_Extension
 
         private const string EnitityText = "entity";
         private const string PortString = "port";
+        private const string ArchitectureString = "architecture";
 
         private static MapperState State { get; set; } = MapperState.SearchStartEntity;
 
@@ -65,7 +67,7 @@ namespace VHDL_Extension
                     var typeAndDirection = text.Split(':')[1].Split(' ');
 
                     var direction = PortSignal.GetDirection(typeAndDirection[1].ToLower());
-                    var kind = string.Join(" ", typeAndDirection, 2, typeAndDirection.Length - 2).Trim(';');
+                    var type = string.Join(" ", typeAndDirection, 2, typeAndDirection.Length - 2).Trim(';');
 
                     foreach (var signalName in text.Split(':')[0].Split(','))
                     {
@@ -73,7 +75,7 @@ namespace VHDL_Extension
                         {
                             Name = signalName.Trim(),
                             Direction = direction,
-                            Kind = kind
+                            Type = type
                         };
                         VhdlEntity.Port.Signals.Add(sig);
                     }
@@ -117,7 +119,48 @@ namespace VHDL_Extension
                     break;
 
                 case MapperState.SearchArchitecture:
-                    //Search for architecture and such...
+                    //Search for architecture
+                    if (text.ToLower().StartsWith(ArchitectureString))
+                    {
+                        var textLine = text.Split(' ');
+                        //Layout: ARCHITECTURE name OF EntityName IS
+                        if (textLine.Length != 4 || textLine[2].ToLower() != "of" || textLine[4].ToLower() != "is")
+                        {
+                            //TODO show error
+                        }
+                        else if (textLine[3] == VhdlEntity.Name)
+                        {
+                            VhdlEntity.Architecture.Name = textLine[1];
+                        }
+
+                        VhdlEntity.Architecture.Signals.Clear();
+                        State = MapperState.SearchArchitectureSignal;
+                    }
+                    break;
+
+                case MapperState.SearchArchitectureSignal:
+                    if (text.TrimStart().ToLower().StartsWith("signal"))
+                    {
+                        type = text.Split(':')[1].TrimEnd(';');
+
+                        var names = string.Join(",", text.Split(':')[0].Trim().Split(' '), 1, text.Split(':')[0].Trim().Split(' ').Length - 1);
+
+                        foreach (var signalName in names.Split(','))
+                        {
+                            ArchitectureSignal sig = new ArchitectureSignal
+                            {
+                                Name = signalName.Trim(),
+                                Type = type
+                            };
+                            VhdlEntity.Architecture.Signals.Add(sig);
+                        }
+
+                        if (!text.EndsWith(";"))
+                        {
+                            //TODO show error
+                        }
+                    }
+
                     break;
             }
         }

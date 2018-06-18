@@ -25,7 +25,7 @@ namespace VHDL_Extension
     {
         public VHDLCustomKeyword()
         {
-            ForegroundColor = Colors.Purple;
+            ForegroundColor = Color.FromRgb(43, 145, 175);
         }
     }
 

@@ -9,7 +9,7 @@ namespace VHDL_Extension.Types
     public class PortSignal : ISignal
     {
         public string Name { get; set; }
-        public string Kind { get; set; }
+        public string Type { get; set; }
 
         public PortDirection Direction { get; set; }
 
@@ -36,7 +36,7 @@ namespace VHDL_Extension.Types
     public class ArchitectureSignal : ISignal
     {
         public string Name { get; set; }
-        public string Kind { get; set; }
+        public string Type { get; set; }
     }
 
     public enum PortDirection
@@ -53,6 +53,6 @@ namespace VHDL_Extension.Types
     {
         string Name { get; set; }
 
-        string Kind { get; set; }
+        string Type { get; set; }
     }
 }

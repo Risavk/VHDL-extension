@@ -8,6 +8,6 @@ namespace VHDL_Extension
 {
     static class Helper
     {
-
+        
     }
 }

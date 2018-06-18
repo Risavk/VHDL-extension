@@ -5,6 +5,8 @@ using System.Linq;
 using System.Windows;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Formatting;
 using VHDL_Extension.Types;
 
 namespace VHDL_Extension
@@ -100,6 +102,8 @@ namespace VHDL_Extension
 
             if (VhdlStructerMapper.VhdlEntity.StartLine != 0 && VhdlStructerMapper.VhdlEntity.StartLine <= startno && VhdlStructerMapper.VhdlEntity.EndLine >= startno)
             {
+                ITextDocument docu;
+                var success = snapshot.TextBuffer.Properties.TryGetProperty(typeof(ITextDocument), out docu);
             }
 
             for (int i = startno; i <= endno; i++)
@@ -150,40 +154,48 @@ namespace VHDL_Extension
                             }
                             spans.Add(CreateClassificationSpan(line, startposition, startposition + index, _classificationTypeRegistry.GetClassificationType("VHDL.ieee")));
                         }
-                        else if (VhdlStructerMapper.VhdlEntity.Port.Signals.Any(p => p.Name == word.Trim().Trim(',', ':', ')', ';')))
+                        else
                         {
-                            //We found a Signal
-                            type = _classificationTypeRegistry.GetClassificationType("VHDL.customkeyword");
-                            spans.Add(CreateClassificationSpan(line, startposition, startposition + word.TrimEnd().TrimEnd(',', ':', ')', ';').Length, type));
-                        }
-                        else //Look for number or strings and make those colors
-                        {
-                            for (int k = 0; k < word.Length; k++)
+                            tempWord = word.Trim().Trim(',', ':', ')', ';');
+                            if (VhdlStructerMapper.VhdlEntity.Port.Signals.Any(p => p.Name == tempWord || VhdlStructerMapper.VhdlEntity.Architecture.Signals.Any(c => c.Name == tempWord)))
                             {
-                                char c = word[k];
-                                if (c == '"')
+                                //We found a Signal
+                                type = _classificationTypeRegistry.GetClassificationType("VHDL.customkeyword");
+                                spans.Add(CreateClassificationSpan(line, startposition,
+                                    startposition + word.TrimEnd().TrimEnd(',', ':', ')', ';').Length, type));
+                            }
+
+                            else //Look for number or strings and make those colors
+                            {
+                                for (int k = 0; k < word.Length; k++)
                                 {
-                                    //String
-                                    int pos = startposition + k;
-                                    //Find closing quote
-                                    int endpos = startposition + word.IndexOf('"', k + 1);
-                                    if (endpos - startposition > 0)
+                                    char c = word[k];
+                                    if (c == '"')
                                     {
-                                        spans.Add(CreateClassificationSpan(line, pos, endpos, _classificationTypeRegistry.GetClassificationType("VHDL.string")));
+                                        //String
+                                        int pos = startposition + k;
+                                        //Find closing quote
+                                        int endpos = startposition + word.IndexOf('"', k + 1);
+                                        if (endpos - startposition > 0)
+                                        {
+                                            spans.Add(CreateClassificationSpan(line, pos, endpos,
+                                                _classificationTypeRegistry.GetClassificationType("VHDL.string")));
+                                        }
+                                        else
+                                        {
+                                            k = word.Length;
+                                        }
                                     }
                                     else
                                     {
-                                        k = word.Length;
-                                    }
-                                }
-                                else
-                                {
-                                    if (char.IsNumber(c))
-                                    {
-                                        //Numbers
-                                        //Check if number is not in a line of text
-                                        int pos = startposition + k;
-                                        spans.Add(CreateClassificationSpan(line, pos, pos + 1, _classificationTypeRegistry.GetClassificationType("VHDL.number")));
+                                        if (char.IsNumber(c) && int.TryParse(word.Trim('(', ')', '\'', ';'),out _))
+                                        {
+                                            //Numbers
+                                            //Check if number is not in a line of text
+                                            int pos = startposition + k;
+                                            spans.Add(CreateClassificationSpan(line, pos, pos + 1,
+                                                _classificationTypeRegistry.GetClassificationType("VHDL.number")));
+                                        }
                                     }
                                 }
                             }
