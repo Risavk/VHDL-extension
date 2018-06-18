@@ -32,7 +32,14 @@ namespace VHDL_Extension
             //Load all keywords
             try
             {
-                using (var reader = new StreamReader(@"keywords.csv"))
+                var path = Path.GetDirectoryName(typeof(VHDL_classifier).Assembly.Location);
+                if (path == null)
+                {
+                    MessageBox.Show("Couldn't load keywords");
+                    return;
+                }
+                path = Path.Combine(path, "keywords.csv");
+                using (var reader = new StreamReader(path))
                 {
                     keywords = new List<string>();
                     while (!reader.EndOfStream)
