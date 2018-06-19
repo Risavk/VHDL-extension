@@ -41,6 +41,11 @@ namespace VHDL_Extension.Completion
                 completions.Add(new Microsoft.VisualStudio.Language.Intellisense.Completion(keyword));
             }
 
+            foreach (var signal in VhdlStructerMapper.VhdlEntity.Port.Signals)
+            {
+                completions.Add(new Microsoft.VisualStudio.Language.Intellisense.Completion(signal.Name, signal.Name, signal.Type, null, "test"));
+            }
+
             ITextSnapshot snapshot = _buffer.CurrentSnapshot;
             var triggerPoint = (SnapshotPoint)session.GetTriggerPoint(snapshot);
 
