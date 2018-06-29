@@ -4,7 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using ICSharpCode.NRefactory.TypeSystem;
 using Microsoft.VisualStudio.Text;
+using VHDL_Extension.Errors;
 using VHDL_Extension.Types;
 
 namespace VHDL_Extension
@@ -23,6 +25,8 @@ namespace VHDL_Extension
             SearchProcess
         }
 
+        public static List<VhdlError> VhdlErrors = new List<VhdlError>();
+
         private const string EnitityText = "entity";
         private const string PortString = "port";
         private const string ArchitectureString = "architecture";
@@ -37,6 +41,7 @@ namespace VHDL_Extension
             {
                 //Reset the state
                 State = MapperState.SearchStartEntity;
+                VhdlErrors.Clear();
             }
 
             var text = line.GetText();
@@ -96,9 +101,13 @@ namespace VHDL_Extension
                     else
                     {
                         //Error occured, or it is on the line down. We'll check if this line contains the end of the entity, so than we now there is an error
-                        if (text.StartsWith("END"))
+                        if (text.ToUpper().Trim().StartsWith("END"))
                         {
                             //ERROR Occured TODO send error message and such
+                            if (VhdlErrors.All(e => e.ErrorType != VhdlErrorType.PortEnd))
+                            {
+                                VhdlErrors.Add(new VhdlError(new SnapshotSpan(line.Start, line.End), VhdlErrorType.PortEnd));
+                            }
                         }
                     }
                     break;
@@ -158,6 +167,11 @@ namespace VHDL_Extension
                         if (!text.EndsWith(";"))
                         {
                             //TODO show error
+                            var s = new SnapshotSpan(line.Start, line.End);
+                            if (VhdlErrors.All(e => e.Span != s))
+                            {
+                                VhdlErrors.Add(new VhdlError(s, VhdlErrorType.ClosingSemiColon));
+                            }
                         }
                     }
 
